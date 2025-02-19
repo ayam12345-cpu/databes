@@ -246,3 +246,31 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+//untuk cek login tampa role
+  
+<?php
+include "config/koneksi.php";
+
+// Ambil data dari form login
+$user = $_POST['username'];
+$pass = md5($_POST['password']);
+
+// Query untuk mencocokkan username dan password di database
+$login = mysqli_query($koneksi, "SELECT * FROM tb_user WHERE username = '$user' AND password = '$pass'");
+$cek = mysqli_num_rows($login);
+
+if ($cek > 0) {
+    // Jika ditemukan user dengan username dan password yang sesuai
+    $data = mysqli_fetch_assoc($login);
+
+    // Mulai session dan simpan UserID ke dalam session
+    session_start();
+    $_SESSION['UserID'] = $data['UserID'];
+
+    // Redirect ke halaman utama user setelah login berhasil
+    header("location:user/index.php");
+} else {
+    // Jika login gagal, redirect kembali ke halaman login dengan pesan error
+    header("location:index.php?pesan=gagal");
+}
